@@ -37,25 +37,28 @@ export class VoyoRouterMain extends VoyoRouterModule {
     this.router.beforeEach((to, from, next) => {
       let moduleRegister: ModuleRegister;
       const targetPath = to.fullPath;
+      let willLoadModule = false;
       for (moduleRegister of this.moduleRegisters) {
         if (
           !moduleRegister.loadComplete &&
           targetPath.startsWith(moduleRegister.path)
         ) {
+          willLoadModule = true;
           this.loadModuleStart();
           this.loadModule(moduleRegister)
             .then(() => {
               moduleRegister.loadComplete = true;
               this.loadModuleSuccess(moduleRegister);
-              next(to.fullPath);
+              return next(to.fullPath);
             })
             .catch((e: any) => {
+              console.warn("[Module load error]", e);
               this.loadModuleError(e);
             });
-        } else {
-          next(true);
+          break;
         }
       }
+      !willLoadModule && next(true);
     });
   }
   async loadModule(moduleRegister: ModuleRegister): Promise<void> {
