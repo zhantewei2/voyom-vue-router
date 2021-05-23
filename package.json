@@ -1,0 +1,34 @@
+{
+  "name": "@voyom/vue-router",
+  "version": "0.0.1-alpha.1",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc --outDir lib -d"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ztwx/utils": "^1.4.0",
+    "rxjs": "^6.6.7",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.8"
+  },
+  "peerDependencies": {
+    "@ztwx/utils": "^1.4.0",
+    "vue-router": "^4.0.8",
+    "rxjs": "^6.6.7",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  },
+  "keywords": [
+    "micro",
+    "vue",
+    "router",
+    "vue-router",
+    "voyo"
+  ]
+}
