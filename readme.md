@@ -4,7 +4,7 @@ voyo-micro vue-router
 
 Routing configuration loaded by micro-module.
 
-Expend the `vue-router(^v4.0)`.
+Expend the `vue-router(^v3.0)`.
 
 ### Install
 ```
