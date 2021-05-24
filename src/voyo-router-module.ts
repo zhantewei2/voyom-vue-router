@@ -1,10 +1,5 @@
-import {
-  ModuleRegister,
-  RouteRaw,
-  VoyoRouteModuleRaw,
-  VoyoRouterModuleImp,
-} from "./types";
-import { Router, RouteRecordRaw } from "vue-router";
+import { ModuleRegister, RouteRaw, VoyoRouterModuleImp } from "./types";
+import VueRouter from "vue-router";
 import { Subject, Subscription } from "rxjs";
 
 export class RouterModuleHooks {
@@ -42,7 +37,7 @@ export class VoyoRouterModule
 {
   name?: string;
   routes: RouteRaw[];
-  router: Router;
+  router: VueRouter;
 
   constructor({ routes, name }: RouterModuleParams) {
     super();

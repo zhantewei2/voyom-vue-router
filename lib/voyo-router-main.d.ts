@@ -1,11 +1,11 @@
 import { VoyoRouterModule, RouterModuleParams } from "./voyo-router-module";
-import { Router } from "vue-router";
+import VueRouter from "vue-router";
 import { ModuleRegister, RouteRaw, VoyoRouteModuleRaw, VoyoRouterModuleImp } from "./types";
 export declare class VoyoRouterMain extends VoyoRouterModule {
     moduleRegisters: ModuleRegister[];
     constructor(params: RouterModuleParams);
     registryModule(route: VoyoRouteModuleRaw, parentPath?: string): void;
-    mount(router: Router): void;
+    mount(router: VueRouter): void;
     handleModuleLoad(): void;
     loadModule(moduleRegister: ModuleRegister): Promise<void>;
     handleRoute(route: RouteRaw, parentPath?: string): void;

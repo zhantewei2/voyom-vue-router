@@ -1,5 +1,5 @@
 import { VoyoRouterModule, RouterModuleParams } from "./voyo-router-module";
-import { Router, RouteRecordRaw } from "vue-router";
+import VueRouter from "vue-router";
 import {
   ModuleRegister,
   RouteRaw,
@@ -11,7 +11,6 @@ import { getUniqueId } from "@ztwx/utils";
 
 export class VoyoRouterMain extends VoyoRouterModule {
   moduleRegisters: ModuleRegister[] = [];
-
   constructor(params: RouterModuleParams) {
     super(params);
   }
@@ -20,13 +19,13 @@ export class VoyoRouterMain extends VoyoRouterModule {
     route.voyoFullPath = resolveUrl(parentPath, route.path);
     this.moduleRegisters.push({
       name: route.name as string,
-      module: route.module,
+      module: route.module as any,
       path: route.voyoFullPath,
       loadComplete: false,
     });
   }
 
-  mount(router: Router) {
+  mount(router: VueRouter) {
     this.router = router;
     this.handleRoutes(this.routes);
     this.routes.forEach((route) => this.router.addRoute(route as any));
@@ -34,7 +33,7 @@ export class VoyoRouterMain extends VoyoRouterModule {
   }
 
   handleModuleLoad() {
-    this.router.beforeEach((to, from, next) => {
+    this.router.beforeEach((to: any, from: any, next: any) => {
       let moduleRegister: ModuleRegister;
       const targetPath = to.fullPath;
       let willLoadModule = false;
@@ -49,7 +48,7 @@ export class VoyoRouterMain extends VoyoRouterModule {
             .then(() => {
               moduleRegister.loadComplete = true;
               this.loadModuleSuccess(moduleRegister);
-              return next(to.fullPath);
+              next(to.fullPath);
             })
             .catch((e: any) => {
               console.warn("[Module load error]", e);
@@ -89,7 +88,7 @@ export class VoyoRouterMain extends VoyoRouterModule {
 
   appendChild(moduleName: string, module: VoyoRouterModuleImp) {
     module.routes.forEach((moduleRoute) => {
-      this.router.addRoute(moduleName, moduleRoute as RouteRecordRaw);
+      this.router.addRoute(moduleName, moduleRoute as any);
     });
   }
 }

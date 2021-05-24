@@ -1,11 +1,8 @@
-import { RouterView } from "vue-router";
-import { h } from "vue";
-
-export const ChildComponent = () =>
-  Promise.resolve(h(RouterView));
-
-export const patchFirst = (main: any, patch: any) => {
-  const old = main;
+import { CreateElement } from "vue";
+export const ChildComponent = {
+  render(h: CreateElement) {
+    return h("router-view");
+  },
 };
 
 export const resolveUrl = (url: string | undefined, url2: string) => {
