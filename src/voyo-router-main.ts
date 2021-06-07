@@ -6,7 +6,7 @@ import {
   VoyoRouteModuleRaw,
   VoyoRouterModuleImp,
 } from "./types";
-import { ChildComponent, resolveUrl } from "./tool";
+import { setting, resolveUrl } from "./tool";
 import { getUniqueId } from "@ztwx/utils";
 
 export class VoyoRouterMain extends VoyoRouterModule {
@@ -75,7 +75,7 @@ export class VoyoRouterMain extends VoyoRouterModule {
       !route.redirect &&
       route.module
     ) {
-      (route as any).component = ChildComponent;
+      (route as any).component = setting.ChildComponent;
       if (!route.name) route.name = getUniqueId();
       this.registryModule(route, parentPath);
     }

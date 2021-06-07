@@ -1,9 +1,12 @@
 import { CreateElement } from "vue";
-export const ChildComponent = {
-  render(h: CreateElement) {
-    return h("router-view");
-  },
-};
+
+export const setting={
+  ChildComponent:{
+    render(h:CreateElement){
+      return h("router-view");
+    }
+  }
+}
 
 export const resolveUrl = (url: string | undefined, url2: string) => {
   return url
