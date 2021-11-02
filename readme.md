@@ -55,3 +55,28 @@ export default new VoyoRouterChild({
 })
 
 ```
+
+
+Cache Router
+---
+```javascript
+import { VoyoRouterView, routerChangeService } from "@voyom/vue-router";
+
+routerChangeService.routerMode = "hash"; // "hash" | "history" ;
+Vue.component("voyo-router-view",VoyoRouterView);
+```
+
+As the page forward , the old page is automatically pushed into the cache.
+
+When returned, the current page is destroyed, the cached page is automatically restored.
+
+Page component will have new life hooks，when you use `voyo-router-view`:
+- **onShow()** When page is visible.
+- **onHide()** page hidden
+
+#### restore scroll position
+
+1. Restore body scrollPosition `(pc)`
+2. Each page has its own `scroll-view` `(mobile)`.  `scroll-view` restore scrollPosition when `connectedCallback()` or `activated()` callback;
+
+

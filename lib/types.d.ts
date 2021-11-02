@@ -6,6 +6,7 @@ export declare class VoyoRouterModuleImp {
     name?: string;
     routes: RouteRaw[];
 }
+export declare type ShouldLoad = (to: any, from: any, next: any) => void;
 export interface VoyoRouteModuleRaw {
     voyoFullPath?: string;
     module?: VoyoModuleRaw;
@@ -13,7 +14,7 @@ export interface VoyoRouteModuleRaw {
     path: string;
     components?: any;
     component?: any;
-    beforeEnter?: any;
+    shouldLoad?: ShouldLoad;
     parent?: any;
     redirect?: any;
     children?: VoyoRouteModuleRaw[];
@@ -24,5 +25,6 @@ export interface ModuleRegister {
     module: VoyoModuleRaw;
     path: string;
     loadComplete?: boolean;
+    shouldLoad?: ShouldLoad;
 }
 export {};

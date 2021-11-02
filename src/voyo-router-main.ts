@@ -8,6 +8,7 @@ import {
 } from "./types";
 import { setting, resolveUrl } from "./tool";
 import { getUniqueId } from "@ztwx/utils";
+import {guardShouldLoad} from "./guard";
 
 export class VoyoRouterMain extends VoyoRouterModule {
   moduleRegisters: ModuleRegister[] = [];
@@ -15,24 +16,23 @@ export class VoyoRouterMain extends VoyoRouterModule {
     super(params);
   }
 
-  registryModule(route: VoyoRouteModuleRaw, parentPath?: string) {
-    route.voyoFullPath = resolveUrl(parentPath, route.path);
+  registryModule(route: VoyoRouteModuleRaw) {
     this.moduleRegisters.push({
       name: route.name as string,
       module: route.module as any,
-      path: route.voyoFullPath,
+      path: route.voyoFullPath as string,
       loadComplete: false,
+      shouldLoad: route.shouldLoad
     });
   }
 
   mount(router: VueRouter) {
     this.router = router;
-    this.handleRoutes(this.routes);
-    this.routes.forEach((route) => this.router.addRoute(route as any));
-    this.handleModuleLoad();
+    this.appendRoutes(this.routes);
+    this.configModuleLoad();
   }
 
-  handleModuleLoad() {
+  configModuleLoad() {
     this.router.beforeEach((to: any, from: any, next: any) => {
       let moduleRegister: ModuleRegister;
       const targetPath = to.fullPath;
@@ -43,17 +43,19 @@ export class VoyoRouterMain extends VoyoRouterModule {
           targetPath.startsWith(moduleRegister.path)
         ) {
           willLoadModule = true;
-          this.loadModuleStart();
-          this.loadModule(moduleRegister)
-            .then(() => {
-              moduleRegister.loadComplete = true;
-              this.loadModuleSuccess(moduleRegister);
-              next(to.fullPath);
-            })
-            .catch((e: any) => {
-              console.warn("[Module load error]", e);
-              this.loadModuleError(e);
-            });
+          guardShouldLoad(moduleRegister,to,from,next,()=>{
+            this.loadModuleStart();
+            this.loadModule(moduleRegister)
+              .then(() => {
+                moduleRegister.loadComplete = true;
+                this.loadModuleSuccess(moduleRegister);
+                next(to.fullPath);
+              })
+              .catch((e: any) => {
+                console.warn("[Module load error]", e);
+                this.loadModuleError(e);
+              });
+          });
           break;
         }
       }
@@ -64,31 +66,33 @@ export class VoyoRouterMain extends VoyoRouterModule {
     const module = moduleRegister.module;
     const voyoRouterModule: VoyoRouterModuleImp =
       module instanceof Function ? (await module()).default : module;
-    this.handleRoutes(voyoRouterModule.routes, moduleRegister.path);
-    this.appendChild(moduleRegister.name, voyoRouterModule);
+    this.appendRoutes(voyoRouterModule.routes, moduleRegister.path);
   }
+  
   handleRoute(route: RouteRaw, parentPath?: string) {
-    // is VoyoRouteModuleRaw
+    route.voyoFullPath=resolveUrl(parentPath,route.path);
     if (
       !route.component &&
       !route.components &&
       !route.redirect &&
       route.module
     ) {
-      (route as any).component = setting.ChildComponent;
       if (!route.name) route.name = getUniqueId();
-      this.registryModule(route, parentPath);
+      this.registryModule(route);
     }
     route.children &&
-      this.handleRoutes(route.children, resolveUrl(parentPath, route.path));
+      this.appendRoutes(route.children, route.voyoFullPath);
   }
-  handleRoutes(routes: RouteRaw[], parentPath?: string) {
+  appendRoutes(routes: RouteRaw[], parentPath?: string) {
     routes && routes.forEach((route) => this.handleRoute(route, parentPath));
+    this.appendChild(routes);
   }
 
-  appendChild(moduleName: string, module: VoyoRouterModuleImp) {
-    module.routes.forEach((moduleRoute) => {
-      this.router.addRoute(moduleName, moduleRoute as any);
+  appendChild(routes: RouteRaw[]) {
+    routes.forEach((route) => {
+      if(!route.module){
+        this.router.addRoute({...route,path:route.voyoFullPath} as any);
+      }
     });
   }
 }
